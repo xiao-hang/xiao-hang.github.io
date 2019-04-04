@@ -15,7 +15,7 @@ tag: MySQL
 
 
 
-### 问题说明 test
+### 问题说明
 
 表`app_msg`的主键id 设置的类型为：**bigint 20** 
 
