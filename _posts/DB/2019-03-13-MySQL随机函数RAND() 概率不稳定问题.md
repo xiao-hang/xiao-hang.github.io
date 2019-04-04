@@ -1,4 +1,20 @@
-##  MySQL随机函数RAND() 概率不稳定
+---
+layout: post
+#标题配置
+title:   MySQL随机函数RAND() 概率不稳定
+#时间配置
+date:   2019-03-13 19:00:00 +0800
+#大类配置
+categories: BUG
+#小类配置
+tag: MySQL
+---
+
+* content
+{:toc}
+
+
+
 
 ### 说明一下问题
 
