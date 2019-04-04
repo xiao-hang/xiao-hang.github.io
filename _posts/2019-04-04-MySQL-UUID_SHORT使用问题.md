@@ -15,7 +15,6 @@ tag: MySQL
 
 
 
-## MySQL-使用UUID_SHORT( ) 的问题
 
 ### 问题说明
 
