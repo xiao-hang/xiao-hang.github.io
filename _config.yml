@@ -2,13 +2,13 @@
 name: 小杭的博客
 email: xiao_hang0_0@163.com
 author: xiao-hang
-url: 木有个人网站
+url: https://blog.csdn.net/xiaohangblog
 resume_site: 木有简历
 github: https://github.com/xiao-hang/
 baseurl: ""
-description: Actually, less is more!
-meta_description: 康志华;个人博客;学而不思则罔;思而不学则殆;生命不止;折腾不休
-motto: It's our wits that make us men.
+description: 买书堆山看书抽丝反正余生漫长!
+meta_description: 小杭;个人博客;技术博客;
+motto: 乘幂学习，学习我快咯！
 banner: 学而不思则罔，思而不学则殆。
 
 #permalink: /:categories/:year/:month/:day/:title/
