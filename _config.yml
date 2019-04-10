@@ -24,3 +24,10 @@ markdown: kramdown
 
 baidu_analysis: 067a922697eb875e3045ce611781aff4
 
+gitment:
+  enable: true
+  githubID: xiao-hang
+  repo: yourrepo
+  ClientID: ef05f816dc92613547eb
+  ClientSecret: 4a83831c44040be29b1ab122d3e83ab8ed3d290a
+  lazy: true
