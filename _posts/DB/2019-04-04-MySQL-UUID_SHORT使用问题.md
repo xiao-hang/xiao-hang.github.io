@@ -94,5 +94,3 @@ mysql> SELECT UUID_SHORT();
 
 2019-04-04 小杭  ミ(・・)ミ
 
-
-
