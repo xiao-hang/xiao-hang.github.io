@@ -1,8 +1,20 @@
-# MySQL-JSON数据说明和操作
-
-[TOC]
-
 ---
+layout: post
+#标题配置
+title:   MySQL-JSON数据说明和操作
+#时间配置
+date:   2019-05-30 10:00:00 +0800
+#大类配置
+categories: 学习笔记
+#小类配置
+tag: MySQL
+---
+
+* content
+{:toc}
+
+
+
 
 ## 说明
 
