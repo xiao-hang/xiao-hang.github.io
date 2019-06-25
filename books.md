@@ -23,7 +23,7 @@ permalink: /books/
  > 人间也没有永远。
  > 世间好物不坚牢，彩云易散琉璃脆。
 * 幻夜 - 东野圭吾 √
-* 不正常人类症候群 
+* 不正常人类症候群 √
  > 莱特昂·布兰朵 的诗写的很不错的
 * 见识  -   吴军
 > Study as if you were to live forever ，live as if you were to die tomorrow. - 终身学习，向死而生。
