@@ -1,8 +1,20 @@
-## 《MySQL技术内部-InnoDB存储引擎》学习笔记一
-
-[TOC]
-
 ---
+layout: post
+#标题配置
+title:   《MySQL技术内幕-InnoDB存储引擎》学习笔记一
+#时间配置
+date:   2019-06-27 18:00:00 +0800
+#大类配置
+categories: 学习笔记
+#小类配置
+tag: 《MySQL技术内幕-InnoDB存储引擎》
+---
+
+* content
+{:toc}
+
+
+
 
 > 2019-04-24 开始学习 ε=(´ο｀*)))唉
 
