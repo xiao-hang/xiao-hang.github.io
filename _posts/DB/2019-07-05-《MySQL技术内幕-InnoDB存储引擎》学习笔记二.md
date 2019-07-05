@@ -1,8 +1,20 @@
-## 《MySQL技术内幕-InnoDB存储引擎》学习笔记二
-
-[TOC]
-
+## 
 ---
+layout: post
+#标题配置
+title:   《MySQL技术内幕-InnoDB存储引擎》学习笔记二
+#时间配置
+date:   2019-07-06 0:00:00 +0800
+#大类配置
+categories: 学习笔记
+#小类配置
+tag: 《MySQL技术内幕-InnoDB存储引擎》
+---
+
+* content
+{:toc}
+
+
 
 > 2019-06-25  ╮(╯▽╰)╭ 捡起来，继续学习
 
