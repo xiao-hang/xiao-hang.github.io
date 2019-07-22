@@ -1,8 +1,20 @@
 # 《MySQL技术内幕-InnoDB存储引擎》学习笔记四
 
-[TOC]
-
 ---
+layout: post
+#标题配置
+title: 《MySQL技术内幕-InnoDB存储引擎》学习笔记四-各种锁的东东
+#时间配置
+date:   2019-07-22 10:00:00 +0800
+#大类配置
+categories: 学习笔记
+#小类配置
+tag: 《MySQL技术内幕-InnoDB存储引擎》
+---
+
+* content
+{:toc}
+
 
 > 2019-07-16   ヾ(◍°∇°◍)ﾉﾞ  不要拦着我  我还能学一会儿
 
