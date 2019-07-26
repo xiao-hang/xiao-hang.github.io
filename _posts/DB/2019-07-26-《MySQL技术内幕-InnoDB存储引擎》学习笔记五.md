@@ -1,6 +1,19 @@
-# 《MySQL技术内幕-InnoDB存储引擎》学习笔记五
+---
+layout: post
+#标题配置
+title:   《MySQL技术内幕-InnoDB存储引擎》学习笔记五-数据库事务
+#时间配置
+date:   2019-07-26 20:00:00 +0800
+#大类配置
+categories: 学习笔记
+#小类配置
+tag: 《MySQL技术内幕-InnoDB存储引擎》
+---
 
-[TOC]
+* content
+{:toc}
+
+
 
 ---
 
