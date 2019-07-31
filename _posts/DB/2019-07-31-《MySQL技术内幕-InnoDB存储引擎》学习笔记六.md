@@ -1,6 +1,19 @@
-# 《MySQL技术内幕-InnoDB存储引擎》学习笔记六-备份和恢复的
+---
+layout: post
+#标题配置
+title:   《MySQL技术内幕》学习笔记六-备份和恢复
+#时间配置
+date:   2019-07-31 14:00:00 +0800
+#大类配置
+categories: 学习笔记
+#小类配置
+tag: 《MySQL技术内幕-InnoDB存储引擎》
+---
 
-[TOC]
+* content
+{:toc}
+
+
 
 ---
 
