@@ -43,6 +43,10 @@ InnoDB默认共享表空间为data 目录下的ibdata1，在开启`innodb_file_p
 
 > Mysql 中的infobright存储器就属于column-oriented（面向列）的。还有：Sybase IQ、Google Big Table；
 
+**关于每页最多允许存放16KB/2-200 = 7992行数据说明：**
+
+**我认为这个确实是内核定义的，在InnoDB存储引擎数据页结构中的page Header 中有参数位：PAGE_N_HEAP，占2字节，表示堆中的记录数，其中第15位表示行记录格式。而-200位系统预留。所以数据为只有14位，就是16KB/2。**
+
 #### InnoDB 行记录格式
 
 就是每一行数据的格式吧╮(╯_╰)╭： 分为两种：Compact（默认） 和 Redundant 两种。
