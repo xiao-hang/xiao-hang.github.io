@@ -16,9 +16,9 @@
 <script src="/live2d/Live2DFramework.js"></script>
 <script src="/live2d/l2dwidget.min.js"></script>
 <script defer="defer">
-	var config1 = {
+	var config = {
     model: {
-        jsonPath: 'tororo/assets/tororo.model.json' // 加载模型的json路径
+        jsonPath: 'live2d/assets/tororo.model.json' // 加载模型的json路径
     },
     display: {
         superSample: 1, // 超采样等级
@@ -38,7 +38,5 @@
         opacityOnHover: 1 // 鼠标移上透明度
     }
 };
-L2Dwidget.init({
-  'config1': 'config1'
-});
+L2Dwidget.init(config);
 </script>
