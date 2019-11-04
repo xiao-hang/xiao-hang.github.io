@@ -1,0 +1,138 @@
+## OpenCV -3 -年龄性别预测
+
+[TOC]
+
+---
+
+> 使用语言：Java 1.8
+> 操作系统：windows x64
+> OpenCV：4.1.1
+
+---
+
+### OpenCV关于预测模型介绍
+
+自2012年深度学习火起来后，AlexNet，vgg16，vgg19，gooGleNet，caffeNet，faster RCNN等，各种模型层出不群，颇有文艺复兴时的形态。
+
+在各种顶会论文中，对年龄和性别的检测的论文还是比较少的。而本文将要讲解的是2015年的一篇cvpr，Age and Gender Classification using Convolutional Neural Networks。官方链接为http://www.openu.ac.il/home/hassner/projects/cnn_agegender/   【很明显这段是小抄，是接下来使用的模型的理论基础，反正我看不懂╮(╯_╰)╭】
+
+### 基于 CNN模型的年龄和性别检测
+
+关于CNN模型的算法等等的，全部略过。。。。
+
+**首先**，先下载模型的文件：age_net.caffemodel、deploy_age.prototxt、gender_net.caffemodel、deploy_gender.prototxt；
+
+**然后**，使用OpenCV的readNetFromCaffe方法加载预测模型。【该方法可以读取以Caffe框架格式存储的网络模型】
+
+**结果**，把图片预处理一下，丢进去执行分析预测方法，就会返回结果了。
+
+> 用现成的模型还是很简单的，而对于预测的准确性啥的，一般般能就行了，肯定比不了那些商用模型的。
+
+### 实际实现代码分析
+
+#### 年龄预测
+
+```java
+ /**
+     * 年龄预测  这个就是上一篇文章里面调用的方法
+     * 参数为人脸识别之后，截取人脸的图片
+     */
+    static String age_model = "D:/OpenCV/opencv/sources/samples/data/dnn/age_gender/age_net.caffemodel";
+    static String age_text = "D:/OpenCV/opencv/sources/samples/data/dnn/age_gender/deploy_age.prototxt";
+    static Net ageNet = readNetFromCaffe(age_text, age_model);
+
+    public static String predict_age(Mat image){
+
+        if (OpenCVTools.ageNet.empty()){
+            System.out.println("could not load net...\n");
+        }
+        // 输入图片，这里的大小是依据模型训练的时候设定的 
+        // 在之后自己训练的时候可以看到地点点原因
+        Mat blob = blobFromImage(image, 1.0, new Size(227,227));
+        ageNet.setInput(blob,"data");
+        // mat  reshape 在不复制数据的情况下更改二维矩阵的形状和/或通道数。
+        Mat prob = ageNet.forward("prob");
+        Mat probMat = prob.reshape(1, 1);
+		// 这里是对预测值做处理
+        Core.MinMaxLocResult mmr = Core.minMaxLoc(probMat);
+        org.opencv.core.Point matchLoc = mmr.maxLoc;
+
+        double classidx = matchLoc.x;
+        System.out.println("年龄"+"???"+matchLoc.x);
+        // 预测对应的年龄数据
+        List ages = new ArrayList();
+        ages.add("0-2");
+        ages.add("4 - 6");
+        ages.add("8 - 12");
+        ages.add("15 - 20");
+        ages.add("25 - 32");
+        ages.add("38 - 43");
+        ages.add("48 - 53");
+        ages.add("60 - 100");
+        return ages.get(((int)classidx))+"";
+    }
+```
+
+#### 性别预测
+
+```java
+/**
+     * 性别预测
+     * 参数为人脸识别之后，截取人脸的图片
+     */
+    static String gender_model = "D:/OpenCV/opencv/sources/samples/data/dnn/age_gender/gender_net.caffemodel";
+    static String gender_text = "D:/OpenCV/opencv/sources/samples/data/dnn/age_gender/deploy_gender.prototxt";
+    static Net sexNet = readNetFromCaffe(gender_text, gender_model);
+
+    public static String predict_gender(Mat image){
+
+        if (sexNet.empty()){
+            System.out.println("could not load net...\n");
+        }
+        // 输入
+        Mat blob = blobFromImage(image, 1.0, new Size(227,227));
+        sexNet.setInput(blob,"data");
+        // 预测分类 运行forward pass以计算名为output name的层的输出。
+        Mat prob = sexNet.forward("prob");
+        Mat probMat = prob.reshape(1, 1);
+
+        double[] sexData0 = probMat.get(0,0);
+        double[] sexData1 = probMat.get(0,1);
+        // 试一下其他的写法  依据标签的写法
+//        Core.MinMaxLocResult mmr = Core.minMaxLoc(probMat);
+//        org.opencv.core.Point matchLoc = mmr.maxLoc;
+//        System.out.println("性别"+"???"+sexData0[0]+sexData1[0]);
+//        System.out.println("性别"+"???"+matchLoc);
+//        List ages = new ArrayList();
+//        ages.add("male");
+//        ages.add("female");
+//        System.out.println("性别"+":::"+ages.get(((int)matchLoc.x))+"");
+        return sexData0[0] > sexData1[0] ? "Man" : "Woman";
+    }
+```
+
+### 小结一下
+
+这里需要一个结果的图片：。。。。。。。
+
+到这里，其实基本的图像识别就已经完成，普通的玩一下的话，可以收工了。
+
+如果需要提升识别精度，或者更多的识别物体，就需要：换一个大佬训练好的模型，或者自己训练一个。
+
+> 因为，打算学习OpenCV是需要做分享的，所有还要继续换gooGleNet模型试一下，据说能识别1000+的物件。
+>
+> 然后，还有自己训练一个人脸对应名称的模型玩一下，理解一下基本训练模型的流程的简单入参。
+
+---
+
+2019-11-04 小杭   ε=(´ο｀*)))唉 学习使我快乐【学习真累。。。。。。
+
+---
+
+### 参考
+
+* <https://blog.csdn.net/hunzhangzui9837/article/details/82840072>
+* 模型地址：<https://talhassner.github.io/home/publication/2015_CVPR>
+* OpenCV文档：<https://docs.opencv.org/4.1.1/>  【一些代码中的方法可以在这里才具体定义】
+
+---
