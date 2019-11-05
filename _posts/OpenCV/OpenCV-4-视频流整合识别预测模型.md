@@ -1,6 +1,19 @@
-## OpenCV-4-视频流整合识别预测模型
+---
+layout: post
+#标题配置
+title:   OpenCV-4-视频流整合识别预测模型
+#时间配置
+date:   2019-11-05 10:00:00 +0800
+#大类配置
+categories: 图像识别
+#小类配置
+tag: OpenCV
+---
 
-[TOC]
+* content
+{:toc}
+
+
 
 ---
 
