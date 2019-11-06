@@ -203,7 +203,7 @@ public class GoogleNetToolsTest {
 
 以下是比较好的测试图片识别结果：
 
-![googlenet_result](img\googlenet_result.jpg)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20191106192322544.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1RpYW5YdWVXdQ==,size_16,color_FFFFFF,t_70)
 
 #### 实际使用参考文章：
 
