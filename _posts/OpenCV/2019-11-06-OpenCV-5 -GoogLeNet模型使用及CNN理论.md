@@ -1,6 +1,19 @@
-## OpenCV -5 -GoogLeNet模型使用及CNN理论
+---
+layout: post
+#标题配置
+title:   OpenCV -5 -GoogLeNet模型使用及CNN理论
+#时间配置
+date:   2019-11-06 10:00:00 +0800
+#大类配置
+categories: 图像识别
+#小类配置
+tag: OpenCV
+---
 
-[TOC]
+* content
+{:toc}
+
+
 
 ---
 
