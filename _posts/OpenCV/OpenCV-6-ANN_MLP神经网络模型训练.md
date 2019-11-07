@@ -1,6 +1,19 @@
-## OpenCV-6-ANN_MLP神经网络模型训练
+---
+layout: post
+#标题配置
+title:   OpenCV-6-ANN_MLP神经网络模型训练
+#时间配置
+date:   2019-11-07 10:00:00 +0800
+#大类配置
+categories: 图像识别
+#小类配置
+tag: OpenCV
+---
 
-[TOC]
+* content
+{:toc}
+
+
 
 ---
 
@@ -26,7 +39,7 @@ MLP是基于生物神经元的模拟和简化，得到多层感知器MLP的基�
 
 **大概就是这个样子的：**
 
-![img](https://pic2.zhimg.com/v2-2110a4d62384a277ab700907e73e8721_b.webp)
+![img](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9waWMyLnpoaW1nLmNvbS92Mi0yMTEwYTRkNjIzODRhMjc3YWI3MDA5MDdlNzNlODcyMV9iLndlYnA?x-oss-process=image/format,png)
 
 > 这里的箭头啥的，表示对应的映射。然后这些映射的抉择用的是：**权重、偏置和激活函数** （具体算法怎么搞定的，我不会算法，大学没有认真学数学啊 ε=(´ο｀*)))唉）
 
@@ -186,11 +199,11 @@ public class AnnMlpTest {
 
 这里给出一下，以上代码使用的入参已经中间的数据集序列成二维矩阵之后的图片：
 
-![](img\OpenCV-6-ANN_MLP神经网络模型训练\训练集.jpg)
+![](https://img-blog.csdnimg.cn/20191107173514767.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1RpYW5YdWVXdQ==,size_16,color_FFFFFF,t_70)
 
 > 这个是训练用的图片
 
-![处理的训练集矩阵](img\OpenCV-6-ANN_MLP神经网络模型训练\处理的训练集矩阵.jpg)
+![处理的训练集矩阵](https://img-blog.csdnimg.cn/20191107173524760.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1RpYW5YdWVXdQ==,size_16,color_FFFFFF,t_70)
 
 > 这个就是 上面代码中的输出的中间处理的训练数据的矩阵，**把一张图片变成一行的像素了**。
 
