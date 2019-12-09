@@ -12,9 +12,12 @@
 <script src="{{ '/styles/js/application.js' | prepend: site.baseurl }}"></script>
 <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
-<script src="https://blog-static.cnblogs.com/files/zouwangblog/autoload.js"></script>
 <script src="https://blog-static.cnblogs.com/files/zouwangblog/mouse-click.js"></script>
 <canvas width="1777" height="841" style="position: fixed; left: 0px; top: 0px; z-index: 2147483647; pointer-events: none;"></canvas>
+
+<link rel="stylesheet" type="text/css" href="https://blog-static.cnblogs.com/files/zouwangblog/waifu1.css"/>
+<link rel="stylesheet" type="text/css" href="https://blog-static.cnblogs.com/files/zouwangblog/flat-ui.min1.css"/>
+
 
 <script src="/live2d/l2dwidget.min.js"></script>
 <script defer="defer">
@@ -42,3 +45,19 @@
 };
 // L2Dwidget.init(config);
 </script>
+<div class="waifu" id="waifu">
+<div class="waifu-tips" style="opacity: 1; font-size: 14px"></div>
+<canvas id="live2d" width="300" height="300" class="live2d"></canvas>
+<div class="waifu-tool">
+<span class="fui-home"></span>
+<span class="fui-chat"></span>
+<span class="fui-eye"></span>
+<span class="fui-user"></span>
+<span class="fui-photo"></span>
+<span class="fui-info-circle"></span>
+<span class="fui-cross"></span>
+</div>
+</div>
+<script src="https://blog-static.cnblogs.com/files/zouwangblog/live2d.js"></script>
+<script src="https://blog-static.cnblogs.com/files/zouwangblog/waifu-tips1.js"></script>
+<script type="text/javascript">initModel()</script>
