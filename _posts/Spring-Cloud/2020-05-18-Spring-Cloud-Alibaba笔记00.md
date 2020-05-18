@@ -1,8 +1,20 @@
-## Spring-Cloud-Alibaba笔记00 - Portainer-Nacos-Sentinel和服务发现注册Demo
-
-[TOC]
-
 ---
+layout: post
+#标题配置
+title:   Spring-Cloud-Alibaba笔记00 - Portainer-Nacos-Sentinel和服务发现注册Demo
+#时间配置
+date:   2020-05-18 12:00:00 +0800
+#大类配置
+categories: Spring-Cloud-Alibaba
+#小类配置
+tag: 基础组件搭建
+---
+
+* content
+{:toc}
+
+
+
 
 > Spring-Cloud-Alibaba的说明？   不存在的。。。。。看官方介绍去
 
