@@ -1,8 +1,20 @@
-## Spring-Cloud-Alibaba笔记01-关于远程调用Dubbo
-
-[TOC]
-
 ---
+layout: post
+#标题配置
+title:   Spring-Cloud-Alibaba笔记01-关于远程调用Dubbo
+#时间配置
+date:   2020-05-18 12:00:00 +0800
+#大类配置
+categories: Spring-Cloud-Alibaba
+#小类配置
+tag: 远程调用Dubbo
+---
+
+* content
+{:toc}
+
+
+
 
 > Nacos既然连上了，当然是用试试远程调用的东东了！！！
 
