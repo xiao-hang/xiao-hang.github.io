@@ -1,4 +1,19 @@
-## Spring-Cloud-Alibaba笔记02-项目设想尝试
+---
+layout: post
+#标题配置
+title:   Spring-Cloud-Alibaba笔记02-项目设想尝试
+#时间配置
+date:   2020-06-01 12:00:00 +0800
+#大类配置
+categories: Spring-Cloud-Alibaba
+#小类配置
+tag: 项目设想尝试
+---
+
+* content
+{:toc}
+
+
 
 
 
@@ -10,7 +25,7 @@
 
 直接看图吧。大概就是这个样子   ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
-![微服务拆分设想](D:\study_note\SpringCloud-2\微服务拆分设想.jpg)
+![微服务拆分设想](https://img-blog.csdnimg.cn/20200529162724951.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1RpYW5YdWVXdQ==,size_16,color_FFFFFF,t_70)
 
 这里面画出来的，还是缺少了一些东西的，比如网关，负载啥的！！！
 
@@ -28,7 +43,7 @@
 
 #### 项目结构
 
-![image-20200529135256095](D:\study_note\SpringCloud-2\image-20200529135256095.png)
+![image-20200529135256095](https://img-blog.csdnimg.cn/20200529162751950.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1RpYW5YdWVXdQ==,size_16,color_FFFFFF,t_70)
 
 查不多就是这个样子，作为一个demo试试。
 
