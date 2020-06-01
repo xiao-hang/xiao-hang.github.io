@@ -1,0 +1,121 @@
+## 高性能MySQL-笔记5-服务器优化-配置调整
+
+[TOC]
+
+---
+
+> 通常在配置了基础的配置项之后，就尽可能少的调整数据库配置，而更应该花时间去优化表结构组织模式、索引、查询设计上面。（过度调优是有风险的）
+
+通常情况下不去调整配置，简单使用默认配置就可以了 。感觉这部分可能会是白看了 ╮(╯_╰)╭ 
+
+---
+
+### 基础配置
+
+什么原理入门提示都略过，直接从最基础的配置开始。
+
+![最基础配置](D:\study_note\DB\MySQL学习笔记-高性能MySQL\最基础配置.png)
+
+这个是书中提供的最基础的配置。【P336~338】
+
+### <font color=red> 项目使用的配置</font> 【最小配置的了】
+
+而我项目使用的配置比这个还要基础：
+
+> 以下都是最基础的配置，和目前使用5.7版本必须配置的优化项。
+> 正常小项目，非集群啥的，还是够用的了  罒ω罒 
+
+```shell
+[mysqld]
+# GENERAL
+datadir=/var/lib/mysql
+socket=/var/lib/mysql/mysql.sock
+pid-file=/var/run/mysqld/mysqld.pid
+log-error=/var/log/mysqld.log
+
+# INNODB 
+# innodb_flush_method=O_DIRECT   # 类UNIX系统特有的配置
+# 必须项，默认值太小，原128M  缓冲池 
+#【 = 系统-max(2G，系统5%)-查询缓存-日志大小】【常用比率为75%~80%】
+#【建议为预测值的80%】【详情：P336~339】
+innodb_buffer_pool_size = 2048M # 必须项 解释↑↑↑
+innodb_log_file_size=512M       # 必须项，默认值太小，日志文件  【一小时日志量？】
+# 优化增加配置项 默认是200，单位是页  【SAS*12 RAID10:2000；SSD：5000；FUSIO-IO：50000】
+innodb_io_capacity=2000         
+innodb_io_capacity_max=6000     # 优化增加配置项
+innodb_lru_scan_depth=2000      # 优化增加配置项目  每次刷脏页的数量
+max_allowed_packet=1024M        # 20M就够了吧：server 接受的数据包大小【一次大量插入数据】
+
+# 一些默认即可的配置 这里蛮写出来一下看看
+innodb_file_per_table=ON   # 独立表数据文件
+
+#修改字符集
+#init_connect='SET collation_connection = utf8_unicode_ci'
+#init_connect='SET NAMES utf8'
+character_set_server=utf8
+#collation-server=utf8_unicode_ci
+#collation_server=utf8_general_ci
+skip-character-set-client-handshake
+
+lower_case_table_names = 1  # 表名存储在磁盘是小写的，但是比较的时候是不区分大小写
+
+#为function指定一个参数
+log_bin_trust_function_creators=1
+# 主从同步的配置 学到备份的时候再研究  
+server-id=210
+log-bin=master-bin
+log-bin-index=master-bin.index
+# validate_password 密码策略插件 mysql5.7之后会自动安装的插件 默认开启的
+validate_password=off
+
+# NO_ENGINE_SUBSTITUTION:使用不不支持的引擎时报错
+# 1.STRICT_TRANS_TABLES，对于单个insert操作，插入单行数据与字段类型不兼容，则insert操作失败并回滚；插入多行数据，如果插入数据的第一行内容与字段类型不兼容，则insert操作失败并回滚，如果插入数据的第一行内容与字段类型兼容，但后续的数据行存在不兼容的情况，则兼容的数据正常插入，不兼容的数据会转换成符合字段类型的格式再插入，不会中断和回滚；
+# 2.STRICT_ALL_TABLES，与STRICT_TRANS_TABLES不同的是，如果插入数据的第一行内容与字段类型兼容，但后续的数据行存在不兼容的情况，则兼容的数据正常插入，不兼容的数据则会报错并终止insert操作。
+sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
+
+# 加固建议5.6及以上版本应该配置为 skip_symbolic_links=yes  [8.0+已经不用了]
+symbolic-links=0 # 禁用符号链接以防止各种安全风险
+
+# 后面看书 ，发现可以加上的配置
+# 对于固态硬盘有着超高 IOPS 性能的磁盘设置为 0，避免查找相邻的脏页一起刷写
+innodb_flush_neighbors = 0 
+# IO线程=一个log线程+四个read线程+四个write线程,读写线程数也可以相应调整【使用SSD+的情况】
+# innodb_read_io_threads #读操作
+# innodb_write_io_threads #写操作
+```
+
+---
+
+### 其它-配置说明与建议
+
+* 需要给系统保留内存：总内存的5% 或者 2G ，取较大值。
+* 通常计算配置的时候：可以预留预测值20%作为性能抖动的影响【毕竟少点影响一点点，超了可能就崩了。╮(╯_╰)╭】
+* mysql每个连接大概需要256KB，1000连接吧，预留个256MB~512MB的内存就够了。【复杂查询会占用更多内存】
+* 必须进行的配置：**innodb 缓冲池，innodb日志文件，查询缓存**，MyISAM不使用略过；按需配置的：二进制日志等
+* innodb_log_buffer_size:控制日志缓冲区的大小，一般在1~8MB。【P352】
+* 还有很多基础配置：【369~375】【个人感觉还是不调整的稳妥】
+  * 一下为个人认为可能需要配置的：【除了以上项目给出的配置】
+  * 备库配置：read_only,skip_slave_start,slave_net_timeout,sync_master_info,sync_relay_log,sync_relay_log_info 
+* **最总要的配置：innodb_buffer_pool_size,innodb_log_file_size**
+
+---
+
+### 结论
+
+在mysql基础配置上面，**不需要调整**。【**没事不要瞎调整，默认的配置比调整的效果好多了**】
+
+必须要调整的只有**innodb存储引擎的 缓冲池大小**，和**日志大小**。其他一下必要调整查看上面的基础配置，我认为最基础的了。
+
+---
+
+### 参考
+
+> 如果觉得我的这个配置很少不详细，推荐下面这个连接的文章，很全面的配置说明。
+
+* 配置文件参数解释：<https://www.cnblogs.com/linuxk/p/9366135.html>
+
+---
+
+2020-04-08 小杭
+
+---

@@ -1,0 +1,46 @@
+## 《高性能MySQL-第三版》  的总评价
+
+> ε=(´ο｀*)))唉  花了我半年的时间，结果其实是很差的。。。。。。
+>
+> 很多内容已经是知道的，因为一些的优化是很基础的。然后其他的很多都是没有使用价值的垃圾话，都只是个介绍，没点用处 (ノ｀Д)ノ 
+>
+> 当然，书确实可以对MySQL的整个体系有个全面大概的了解，仅仅是了解！！！！
+
+---
+
+### 个人评价
+
+**全书760页，其实377页之后【2-8章节之后】都是垃圾话了。。。。。**【第8章为配置优化】
+
+>  只是对mysql的各种情况做了介绍，没有任何实质性的作用，最多让你知道大概有这么个东西，然后并不会使用 ╮(╯_╰)╭   感觉是为了凑字数，搜索各种文章搞下来拼一起的。
+
+不知道为什么这么多人推荐这本书，虽然觉得，**前8个章节说的很不错，但是还是觉得不够详细的**，但是后半本真的算是凑字数了啊 ╮(╯_╰)╭  
+
+而且，版本还是比较旧的，版本在5.5版本发布之前【很多大的改造都在这几个版本之间优化的 ε=(´ο｀*)))唉 】
+
+最后给个建议：**对于一些mysql的调优，在网上查过资料之后，建议去官网再查一次相应的资料【官方的资料很推荐的，文档灰常的全面】**
+
+然后还是推荐一下之前那本《MySQL技术内幕-InnoDB存储引擎 》，这本主讲InnoDB，很详细！
+
+**<font color=red>《高性能MySQL》这本评价不怎么推荐看了，当做了解随便看看最多了。讲的很广但都不详细！</font>**
+
+---
+
+### 觉得有用的笔记【前8章节】
+
+1. [数据库监控](https://blog.csdn.net/TianXueWu/article/details/106259091)：https://blog.csdn.net/TianXueWu/article/details/106259091
+2. [高性能MySQL-笔记1-基础数据获取分析](https://blog.csdn.net/TianXueWu/article/details/106259230) :https://blog.csdn.net/TianXueWu/article/details/106259230
+3. [高性能MySQL-笔记2-数据类型和奇怪的东西](https://blog.csdn.net/TianXueWu/article/details/106259376):https://blog.csdn.net/TianXueWu/article/details/106259376
+4. [高性能MySQL-笔记3-索引等等](https://blog.csdn.net/TianXueWu/article/details/106259662)：https://blog.csdn.net/TianXueWu/article/details/106259662
+5. [高性能MySQL-笔记4-所谓的高级的东东](https://blog.csdn.net/TianXueWu/article/details/106259775)：https://blog.csdn.net/TianXueWu/article/details/106259775
+6. [高性能MySQL-笔记5-服务器优化-配置调整](https://blog.csdn.net/TianXueWu/article/details/106259863)：https://blog.csdn.net/TianXueWu/article/details/106259863
+7. [高性能MySQL-笔记6-关于MySQL复制的东东](https://blog.csdn.net/TianXueWu/article/details/106259930)：https://blog.csdn.net/TianXueWu/article/details/106259930
+8. [高性能MySQL-笔记7-备份与恢复](https://blog.csdn.net/TianXueWu/article/details/106259984)：https://blog.csdn.net/TianXueWu/article/details/106259984
+9. [高性能MySQL-笔记8-后半本垃圾话](https://blog.csdn.net/TianXueWu/article/details/106260026)：https://blog.csdn.net/TianXueWu/article/details/106260026
+10. [高性能MySQL总评价](https://blog.csdn.net/TianXueWu/article/details/106260077)：https://blog.csdn.net/TianXueWu/article/details/106260077
+
+---
+
+小杭 2020-05-21
+
+---

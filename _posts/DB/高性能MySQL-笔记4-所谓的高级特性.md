@@ -1,0 +1,66 @@
+## 高性能MySQL-笔记4-所谓的高级的东东
+
+[TOC]
+
+---
+
+### 分区表的一些注意点
+
+* 分区表是各个子表的透明封装，索引也按照子表的，所有不存在全局索引。
+* 对null值会存放在单独第一分区，默认扫描的。
+* 【分区的限制和查询有很多，并不是什么特别提示性能的东东，可以参考之前InnoDB的笔记】
+
+### 视图的东东
+
+略过，没事别用就对了。没啥子的性能优化效果。
+
+### 内部代码【存储、函数等】
+
+* 定时事件是有线程池的：event_scheduler :=N ;
+
+### 构建动态SQL
+
+```mysql
+set @sql := 'select ....from table where pare_1 = ?';
+PREPARE xxxfindsql from @sql;
+set @canshu := '123';
+EXECUTE xxxfindsql USING @canshu ;
+```
+
+### 查询缓存 ！！
+
+* 如果变发生变化，则与之相关的所有缓存数据失效。【辣么实时表、操作密集表的失效可能很大】
+
+  * **建议是关闭查询缓存或者配置很小的查询缓存空间？？**
+
+  * ```mysql
+    show variables like '%query_cache%'; 
+    
+    如果不是ON，修改配置文件以开启查询缓存：
+    > vi /etc/my.cnf
+    [mysqld]中添加：
+    query_cache_size = 20M
+    query_cache_type = ON
+     
+    重启mysql服务：
+    > service mysql restart
+    
+    查看缓存使用情况：[P316~318]
+    show status like 'qcache%';  
+    show status like 'com_select%';  
+    命中率：Qcache_hits/(Com_select+Qcache_hits)    [失效原因分析P315]
+    命中和写入比率：Qcache_hits：Qcache_inserts   （3:1 以上有效  10:1 就很好的了）
+    
+    ```
+
+  * 缓存命中的限制很多，操作表而进行缓存失效时，使用全局锁保护（命中，失效，缓存都靠这个锁），在缓存太大时，系统可能僵死。
+
+* 使用 SQL_CACHE 和 query_cache_type = DEMAND 可以手动控制查询缓存
+
+* 感觉没啥事，还是把它关了的好。可能出事，限制还多。。。ε=(´ο｀*)))唉
+
+* 代替方案。。 我觉得一些的不经常变更的，数据量小的，丢到项目 Redis 缓存去好了 ╮(╯_╰)╭
+
+---
+
+小杭 2020-02-10  感觉这些高级功能都呀的难用啊  (╯‵□′)╯︵┻━┻   
