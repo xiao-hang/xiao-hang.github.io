@@ -1,4 +1,19 @@
-## MySQL查询系统信息
+---
+layout: post
+#标题配置
+title:   MySQL查询系统信息
+#时间配置
+date:   2020-06-02 09:00:00 +0800
+#大类配置
+categories: 学习笔记
+#小类配置
+tag: 《高性能MySQL》
+---
+
+* content
+{:toc}
+
+
 
 ### 查询系统状态信息
 
