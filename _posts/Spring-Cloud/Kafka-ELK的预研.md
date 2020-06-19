@@ -1,0 +1,365 @@
+## Kafka-ELK的预研
+
+---
+
+经常听说消息队列啥的？但是，目前在的小公司是不使用这东西的。
+
+所以，还是先看看，了解一下是做什么用的东东！！！！
+
+> 消息队列：是分布式系统中的重要组件，使用消息队列主要是为了通过异步处理提高系统性能和削峰、降低系统耦合性。目前使用较多的消息队列有ActiveMQ，RabbitMQ，Kafka，RocketMQ；
+
+---
+
+[TOC]
+
+---
+
+### 有啥子用处？
+
+* 通过异步处理提高系统性能
+
+  * > ![栗子](https://upload-images.jianshu.io/upload_images/2509688-311483f18a8d228e?imageMogr2/auto-orient/strip|imageView2/2/w/910/format/webp)
+    >
+    > 如上图，**在不使用消息队列服务器的时候，用户的请求数据直接写入数据库，在高并发的情况下数据库压力剧增，使得响应速度变慢。但是在使用消息队列之后，用户的请求数据发送给消息队列之后立即 返回，再由消息队列的消费者进程从消息队列中获取数据，异步写入数据库。由于消息队列服务器处理速度快于数据库（消息队列也比数据库有更好的伸缩性），因此响应速度得到大幅改善。**
+    >
+    > 通过以上分析我们可以得出**消息队列具有很好的削峰作用的功能**——即**通过异步处理，将短时间高并发产生的事务消息存储在消息队列中，从而削平高峰期的并发事务。** 举例：在电子商务一些秒杀、促销活动中，合理使用消息队列可以有效抵御促销活动刚开始大量订单涌入对系统的冲击。如下图所示：
+    >
+    > ![栗子](https://upload-images.jianshu.io/upload_images/2509688-f9b9af2c6620e724?imageMogr2/auto-orient/strip|imageView2/2/format/webp)
+    >
+    > 
+
+* 降低系统耦合性
+
+  * > 我们知道如果模块之间不存在直接调用，那么新增模块或者修改模块就对其他模块影响较小，这样系统的可扩展性无疑更好一些。
+    >
+    > 我们最常见的**事件驱动架构**类似生产者消费者模式，在大型网站中通常用利用消息队列实现事件驱动结构。如下图所示：
+    >
+    > ![img](https:////upload-images.jianshu.io/upload_images/2509688-f3bddbdea97bb30c?imageMogr2/auto-orient/strip|imageView2/2/w/790/format/webp)
+    >
+    > 利用消息队列实现事件驱动结构
+    >
+    > **消息队列使利用发布-订阅模式工作，消息发送者（生产者）发布消息，一个或多个消息接受者（消费者）订阅消息。** 从上图可以看到**消息发送者（生产者）和消息接受者（消费者）之间没有直接耦合**，消息发送者将消息发送至分布式消息队列即结束对消息的处理，消息接受者从分布式消息队列获取该消息后进行后续处理，并不需要知道该消息从何而来。**对新增业务，只要对该类消息感兴趣，即可订阅该消息，对原有系统和业务没有任何影响，从而实现网站业务的可扩展性设计**。
+    >
+    > 消息接受者对消息进行过滤、处理、包装后，构造成一个新的消息类型，将消息继续发送出去，等待其他消息接受者订阅该消息。因此基于事件（消息对象）驱动的业务架构可以是一系列流程。
+
+---
+
+**另外为了避免消息队列服务器宕机造成消息丢失，会将成功发送到消息队列的消息存储在消息生产者服务器上，等消息真正被消费者服务器处理后才删除消息。在消息队列服务器宕机后，生产者服务器会选择分布式消息队列服务器集群中的其他服务器发布消息。**
+
+**备注：** 不要认为消息队列只能利用发布-订阅模式工作，只不过在解耦这个特定业务环境下是使用发布-订阅模式的。**除了发布-订阅模式，还有点对点订阅模式（一个消息只有一个消费者），我们比较常用的是发布-订阅模式。** 另外，这两种消息模型是 JMS 提供的，AMQP 协议还提供了 5 种消息模型。
+
+---
+
+### 一些问题？
+
+* **系统可用性降低：** 系统可用性在某种程度上降低，为什么这样说呢？在加入MQ之前，你不用考虑消息丢失或者说MQ挂掉等等的情况，但是，引入MQ之后你就需要去考虑了！
+* **系统复杂性提高：** 加入MQ之后，你需要保证消息没有被重复消费、处理消息丢失的情况、保证消息传递的顺序性等等问题！
+* **一致性问题：** 我上面讲了消息队列可以实现异步，消息队列带来的异步确实可以提高系统响应速度。但是，万一消息的真正消费者并没有正确消费消息怎么办？这样就会导致数据不一致的情况了!
+
+---
+
+### 协议**JMS vs AMQP**
+
+<table>
+<thead>
+<tr>
+<th style="    width: 15%;" >对比方向</th>
+<th style="    width: 35%;">JMS         </th>
+<th>AMQP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>定义</td>
+<td>Java API</td>
+<td>协议</td>
+</tr>
+<tr>
+<td>跨语言</td>
+<td>否</td>
+<td>是</td>
+</tr>
+<tr>
+<td>跨平台</td>
+<td>否</td>
+<td>是</td>
+</tr>
+<tr>
+<td>支持消息类型</td>
+<td>提供两种消息模型：①Peer-2-Peer;②Pub/sub</td>
+<td>提供了五种消息模型：①direct exchange；②fanout exchange；③topic change；④headers exchange；⑤system exchange。本质来讲，后四种和JMS的pub/sub模型没有太大差别，仅是在路由机制上做了更详细的划分；</td>
+</tr>
+<tr>
+<td>支持消息类型</td>
+<td>
+<p>StreamMessage -- Java原始值的数据流</p>
+<p>MapMessage--一套名称-值对</p>
+<p>TextMessage--一个字符串对象</p>
+<p>ObjectMessage--一个序列化的 Java对象</p>
+<p>BytesMessage--一个字节的数据流</p>
+</td>
+<td>byte[]（二进制）</td>
+</tr>
+</tbody>
+</table>
+
+**总结：**
+
+* AMQP 为消息定义了线路层（wire-level protocol）的协议，而JMS所定义的是API规范。在 Java 体系中，多个client均可以通过JMS进行交互，不需要应用修改代码，但是其对跨平台的支持较差。而AMQP天然具有跨平台、跨语言特性。
+* JMS 支持TextMessage、MapMessage 等复杂的消息类型；而 AMQP 仅支持 byte[] 消息类型（复杂的类型可序列化后发送）。
+* 由于Exchange 提供的路由算法，AMQP可以提供多样化的路由方式来传递消息到消息队列，而 JMS 仅支持 队列 和 主题/订阅 方式两种。
+
+---
+
+### 常见组件对比
+
+<table>
+<thead>
+<tr>
+<th style="    width: 10%;">对比方向</th>
+<th>概要</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>吞吐量</td>
+<td>万级的 ActiveMQ 和 RabbitMQ 的吞吐量（ActiveMQ 的性能最差）要比 十万级甚至是百万级的 RocketMQ 和 Kafka 低一个数量级。</td>
+</tr>
+<tr>
+<td>可用性</td>
+<td>都可以实现高可用。ActiveMQ 和 RabbitMQ 都是基于主从架构实现高可用性。RocketMQ 基于分布式架构。 kafka 也是分布式的，一个数据多个副本，少数机器宕机，不会丢失数据，不会导致不可用</td>
+</tr>
+<tr>
+<td>时效性</td>
+<td>RabbitMQ 基于erlang开发，所以并发能力很强，性能极其好，延时很低，达到微秒级。其他三个都是 ms 级。</td>
+</tr>
+<tr>
+<td>功能支持</td>
+<td>除了 Kafka，其他三个功能都较为完备。 Kafka 功能较为简单，主要支持简单的MQ功能，在大数据领域的实时计算以及日志采集被大规模使用，是事实上的标准</td>
+</tr>
+<tr>
+<td>消息丢失</td>
+<td>ActiveMQ 和 RabbitMQ 丢失的可能性非常低， RocketMQ 和 Kafka 理论上不会丢失。</td>
+</tr>
+</tbody>
+</table>
+
+**总结：**
+
+* ActiveMQ 的社区算是比较成熟，但是较目前来说，ActiveMQ 的性能比较差，而且版本迭代很慢，不推荐使用。
+* RabbitMQ 在吞吐量方面虽然稍逊于 Kafka 和 RocketMQ ，但是由于它基于 erlang 开发，所以并发能力很强，性能极其好，延时很低，达到微秒级。但是也因为 RabbitMQ 基于 erlang 开发，所以国内很少有公司有实力做erlang源码级别的研究和定制。如果业务场景对并发量要求不是太高（十万级、百万级），那这四种消息队列中，RabbitMQ 一定是你的首选。如果是大数据领域的实时计算、日志采集等场景，用 Kafka 是业内标准的，绝对没问题，社区活跃度很高，绝对不会黄，何况几乎是全世界这个领域的事实性规范。
+* RocketMQ 阿里出品，Java 系开源项目，源代码我们可以直接阅读，然后可以定制自己公司的MQ，并且 RocketMQ 有阿里巴巴的实际业务场景的实战考验。RocketMQ 社区活跃度相对较为一般，不过也还可以，文档相对来说简单一些，然后接口这块不是按照标准 JMS 规范走的有些系统要迁移需要修改大量代码。还有就是阿里出台的技术，你得做好这个技术万一被抛弃，社区黄掉的风险，那如果你们公司有技术实力我觉得用RocketMQ 挺好的
+* kafka 的特点其实很明显，就是仅仅提供较少的核心功能，但是提供超高的吞吐量，ms 级的延迟，极高的可用性以及可靠性，而且分布式可以任意扩展。同时 kafka 最好是支撑较少的 topic 数量即可，保证其超高吞吐量。kafka 唯一的一点劣势是有可能消息重复消费，那么对数据准确性会造成极其轻微的影响，在大数据领域中以及日志采集中，这点轻微影响可以忽略这个特性天然适合大数据实时计算以及日志收集。
+
+> **所以，用RocketMQ 还是 Kafka 呢**，毕竟打算用的是Spring Cloud Alibaba的啊 。。。。。
+
+---
+
+### Kafka 介绍
+
+#### 首先是一些概念:
+
+* Kafka作为一个集群，运行在一台或者多台服务器上.
+* Kafka 通过 *topic* 对存储的流数据进行分类。
+* 每条记录中包含一个key，一个value和一个timestamp（时间戳）。
+
+#### Kafka有四个核心的API:
+
+> <img src="http://kafka.apachecn.org/10/images/kafka-apis.png" width = "50%" div align=left />
+
+* The [Producer API](http://kafka.apachecn.org/documentation.html#producerapi) 允许一个应用程序发布一串流式的数据到一个或者多个Kafka topic。
+* The [Consumer API](http://kafka.apachecn.org/documentation.html#consumerapi) 允许一个应用程序订阅一个或多个 topic ，并且对发布给他们的流式数据进行处理。
+* The [Streams API](http://kafka.apachecn.org/documentation/streams) 允许一个应用程序作为一个*流处理器*，消费一个或者多个topic产生的输入流，然后生产一个输出流到一个或多个topic中去，在输入输出流中进行有效的转换。
+* The [Connector API](http://kafka.apachecn.org/documentation.html#connect) 允许构建并运行可重用的生产者或者消费者，将Kafka topics连接到已存在的应用程序或者数据系统。比如，连接到一个关系型数据库，捕捉表（table）的所有变更内容。
+
+#### Kafka官方说明的用处
+
+*  [作为消息系统](http://kafka.apachecn.org/intro.html#kafka_mq)
+
+  * > 但请注意，消费者组中的消费者实例个数不能超过分区的数量。 ?????
+
+*  作为存储系统
+
+  * 可认为Kafka是一种高性能、低延迟、具备日志存储、备份和传播功能的分布式文件系统。
+  * 关于Kafka提交日志存储和备份设计的更多细节，可以阅读 [这页](https://kafka.apache.org/documentation/#design) 。
+
+*  用做流处理
+
+*  用做批处理
+
+#### 使用场景
+
+* 日志收集：一个公司可以用Kafka可以收集各种服务的log，通过kafka以统一接口服务的方式开放给各种consumer，例如hadoop、Hbase、Solr等。
+* 消息系统：解耦和生产者和消费者、缓存消息等。
+* 用户活动跟踪：Kafka经常被用来记录web用户或者app用户的各种活动，如浏览网页、搜索、点击等活动，这些活动信息被各个服务器发布到kafka的topic中，然后订阅者通过订阅这些topic来做实时的监控分析，或者装载到hadoop、数据仓库中做离线分析和挖掘。
+* 运营指标：Kafka也经常用来记录运营监控数据。包括收集各种分布式应用的数据，生产各种操作的集中反馈，比如报警和报告。
+* 流式处理：比如spark streaming和storm
+* 事件源
+
+> 我觉得做：日志收集，用户活动跟踪 这两个比较可能整合到我目前使用的web项目里面去。
+>
+> 以下是新浪kafka日志处理应用案例：转自（http://cloud.51cto.com/art/201507/484338.htm）![img](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9pbWFnZXMyMDE1LmNuYmxvZ3MuY29tL2Jsb2cvODIwMzMyLzIwMTYwMS84MjAzMzItMjAxNjAxMjQyMTE0NDc4NzUtMTI1MTQ5MjU4MS5wbmc)
+>
+> 1. Kafka：接收用户日志的消息队列
+> 2. Logstash：做日志解析，统一成JSON输出给Elasticsearch
+> 3. Elasticsearch：实时日志分析服务的核心技术，一个schemaless，实时的数据存储服务，通过index组织数据，兼具强大的搜索和统计功能
+> 4. Kibana：基于Elasticsearch的数据可视化组件，超强的数据可视化能力是众多公司选择ELK stack的重要原因
+
+---
+
+### Kafka的使用
+
+> 其实Kafka的消息队列系统和项目使用的 Cloud 集群是分开的。
+>
+> 所以无所谓使用的是Spring Cloud Alibaba 的那一套，Nacos啥的。
+>
+> Kafka的集群使用的部署依赖是ZooKeeper 。【ZooKeeper 的集群也是独立的】
+>
+> 即使用Alibaba 全家桶的RocketMQ，使用的部署依赖也是单独的项目-Name Server 而不是 Nacos  ，所以无所谓的 ╮(╯_╰)╭
+
+所以，基于Kafka的使用，还是用来试试日志管理吧。ELK的那一套日志管理【Filebeat+*Kafka+Logstash+*ElasticSearch+Kibana】
+
+#### 了解各个组件的作用
+
+* Filebeat是一个日志文件托运工具，在你的服务器上安装客户端后，filebeat会监控日志目录或者指定的日志文件，追踪读取这些文件（追踪文件的变化，不停的读）
+* Kafka是一种高吞吐量的分布式发布订阅消息系统，它可以处理消费者规模的网站中的所有动作流数据
+* Logstash是一根具备实时数据传输能力的管道，负责将数据信息从管道的输入端传输到管道的输出端；与此同时这根管道还可以让你根据自己的需求在中间加上滤网，Logstash提供里很多功能强大的滤网以满足你的各种应用场景
+* ElasticSearch它提供了一个分布式多用户能力的全文搜索引擎，基于RESTful web接口
+* Kibana是ElasticSearch的用户界面
+
+> 在实际应用场景下，为了满足大数据实时检索的场景，利用Filebeat去监控日志文件，将Kafka作为Filebeat的输出端，Kafka实时接收到Filebeat后以Logstash作为输出端输出，到Logstash的数据也许还不是我们想要的格式化或者特定业务的数据，这时可以通过Logstash的一些过了插件对数据进行过滤最后达到想要的数据格式以ElasticSearch作为输出端输出，数据到ElasticSearch就可以进行丰富的分布式检索了
+
+####  Filebeat+Kafka 日志收集
+
+##### Kafka 安装默认安装
+
+> 默认安装就可以了，使用的就是官方的教程，照着搞就可以了。
+>
+> 使用版本2.5.0 
+
+```shell
+# Download the 2.5.0 release and un-tar it.
+> tar -xzf kafka_2.12-2.5.0.tgz
+> cd kafka_2.12-2.5.0
+
+# Start Zookeeper Server used nohup and zookeeper.properties [nothing to change]
+nohup bin/zookeeper-server-start.sh config/zookeeper.properties > /u01/kafka/log/zookeeper-log.log 2>&1 &
+
+# Start Kafka Server  need change config to listener 9092 port ，otherwise only use localhost。
+# e.g：listeners=PLAINTEXT://192.168.1.180:9092 
+nohup bin/kafka-server-start.sh config/server.properties > /u01/kafka/log/kafka-log.log 2>&1 &
+
+# create new topic 
+bin/kafka-topics.sh --create --bootstrap-server 192.168.1.180:9092 --replication-factor 1 --partitions 1 --topic xiaohang-test
+# query all topic list 
+bin/kafka-topics.sh --list --bootstrap-server 192.168.1.180:9092
+# e.g:
+# [root@localhost kafka_2.12-2.5.0]# bin/kafka-topics.sh --list --bootstrap-server 192.168.1.180:9092
+# __consumer_offsets
+# elk-test
+# xiaohang-test
+
+# ok this's all. (～￣▽￣)～ 
+```
+
+##### Filebeat 安装，监控日志文件
+
+> 这个的安装就也是很简单的，调整一下输入输出的配给就可以了。
+>
+> 版本使用7.7.1 。使用在于Kafka不在同一台机子里，是在使用项目的测试环境中。
+
+调整filebeat.yml配置文件
+
+```yaml
+filebeat.inputs:
+- type: log
+  # Change to true to enable this input configuration.
+  enabled: true
+  # Paths that should be crawled and fetched. Glob based paths.
+  paths:
+    #- /var/log/*.log
+    - /u01/happyPay/admin/logs/*.log
+    #- c:\programdata\elasticsearch\logs\*
+#============================= Filebeat modules ===============================
+filebeat.config.modules:
+  # Glob pattern for configuration loading
+  path: ${path.config}/modules.d/*.yml
+  # Set to true to enable config reloading
+  reload.enabled: false
+  # Period on which files under path should be checked for changes
+  #reload.period: 10s
+#==================== Elasticsearch template setting ==========================
+setup.template.settings:
+  index.number_of_shards: 1
+  #index.codec: best_compression
+  #_source.enabled: false
+#----------------------------- Logstash output --------------------------------
+output.kafka:
+  hosts: ["192.168.1.180:9092"]
+  topic: xiaohang-test
+  required_acks: 1
+#output.logstash:
+  # The Logstash hosts
+  #hosts: ["localhost:5044"]
+#================================ Processors =====================================
+# Configure processors to enhance or manipulate events generated by the beat.
+processors:
+  - add_host_metadata: ~
+  - add_cloud_metadata: ~
+  - add_docker_metadata: ~
+  - add_kubernetes_metadata: ~
+```
+
+然后启动就可以了
+
+```shell
+nohup ./filebeat -e -c filebeat.yml > /u01/Filebeat/log/Filebeat-log.log 2>&1 &
+```
+
+然后就可以 ╮(╯_╰)╭ 
+
+---
+
+#### ELK 日志分析管理
+
+> **查看小东编写的文档：[ELK安装部署](.\ELK安装部署.md) 。**
+
+---
+
+#### 最后差不多的效果
+
+![QQ图片20200612190959](D:\study_note\Kafka\QQ图片20200612190959.png)
+
+差不多这个样子，可以设计一些系统日志的监控的模型，用来监控各种问题的平率等等。
+
+如果，系统前端app等，有操作埋点的话，也可以用来分析用户操作的。
+
+---
+
+### 各种的参考文章
+
+* https://www.jianshu.com/p/36a7775b04ec   
+* http://kafka.apache.org/    
+* https://www.jianshu.com/p/734cf729d77b      - Kafka史上最详细原理总结上
+* https://www.jianshu.com/p/acf010e67a19      - Kafka史上最详细原理总结下
+* https://www.w3cschool.cn/apache_kafka/      - W3C教程
+* https://www.jianshu.com/p/7c02290bc421  spring cloud alibaba + kafka 问题
+  * https://www.pianshen.com/article/6287978769/   一样的  https://blog.csdn.net/LSY_CSDN_/article/details/105199663
+* https://blog.csdn.net/aoxiangzhe/article/details/91045431   使用场景的东西
+*  [Filebeat+*Kafka+Logstash+*ElasticSearch+Kibana 日志系统搭建博客](http://www.baidu.com/link?url=8JmX1cLJb_9z22r8ZVL_AJTYjDw0lv_Xj_IJviA5sb_EKCkzhZP8-QpIHYumDbNjNdjg7LNv3wEr4KAOpkA7RK)
+* https://blog.csdn.net/sanyaoxu_2/article/details/88671043   一个叫做PP的东东Pinpoint
+* https://blog.csdn.net/zxl646801924/article/details/105659481/     RocketMQ的东东
+* https://www.jianshu.com/p/2838890f3284   Rocketmq原理&最佳实践
+* ElasticSearch 的官网：https://www.elastic.co/cn/elasticsearch/
+* ELK下载地址：https://www.elastic.co/cn/downloads/
+* Filebeat本地文件的日志数据采集器：https://www.jianshu.com/p/0a5acf831409
+* 提供的ELK云盘镜像：https://blog.csdn.net/weixin_37281289/article/details/101483434
+
+---
+
+小杭  ୧(๑•̀◡•́๑)૭ 
+
+2020-06-17
+
+---
+
