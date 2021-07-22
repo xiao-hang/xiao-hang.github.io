@@ -29,6 +29,30 @@
 		  s.parentNode.insertBefore(hm, s);
 		})();
 	</script>
+	<!-- 标题动画 -->
+	<script>
+	 var title = document.title;
+		var tit;
+		function doTitle(){
+			var num = parseInt(6*Math.random());
+			var arr = new Array();
+			arr[0] = '╭ (￣︶￣)ψ ';
+			arr[1] = '(づ￣ 3￣)づ';
+			arr[2] = '┌(￣◇￣)┘    ';
+			arr[3] = 'ヘ(￣ω￣ヘ) ';
+			arr[4] = '(┘￣ ￣)┘   ';
+			arr[5] = '└(￣ ￣└)   ';
+			document.title = arr[num] +' 记得回来哦';
+		}
+		window.onblur = function() {
+			doTitle();
+			tit = setInterval(doTitle, 200);
+		};
+		window.onfocus = function() {
+			document.title = title;
+			clearInterval(tit);
+		};
+	</script>
   	<style type="text/css">
 	  	.docs-content{
 	  		margin-bottom: 10px;
